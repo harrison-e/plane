@@ -28,3 +28,8 @@ OpenGL, GLM, SDL2
 ## How to run 
 
 Run `python3 build.py` to build. Then, run `./plane`.
+
+## Future updates
+- [ ] Add third person perspective
+- [ ] Add airplane obj/mtl
+- [ ] Add flight physics 
