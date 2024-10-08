@@ -9,7 +9,7 @@ Airplane::Airplane()
   : Object("./shaders/vert.glsl", "./shaders/frag.glsl", "./assets/windmill.obj") { 
   // For now, windmill, not airplane
   std::cout << "(Airplane) Constructor called\n";
-  m_velocity   = +0.4f;
+  m_velocity   = +0.1f;
   m_airDensity = +1;
   m_wingArea   = +1;
 }
@@ -103,5 +103,5 @@ void Airplane::Update(glm::mat4 projectionMatrix, Camera* camera) {
   //   Yaw(yawAngle * (m_pitchAxis.y > 0.f ? -0.01f : +0.01f));
   // }
   
-  m_transform.Translate(m_velocity, 0, 0);
+  m_transform.Translate(0, 0, m_velocity);
 }

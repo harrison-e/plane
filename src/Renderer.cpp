@@ -16,7 +16,7 @@ Renderer::Renderer(unsigned int w, unsigned int h){
   // Initialize the root in our scene
   m_root = nullptr;
 
-  // By derfaflt create one framebuffer within the renderere.
+  // By default create one framebuffer within the renderer.
   Framebuffer* regFramebuffer = new Framebuffer();
   regFramebuffer->Create(w,h);
   m_framebuffers.push_back(regFramebuffer);
@@ -47,7 +47,7 @@ void Renderer::Update(){
   // Then perspective
   // Then the near and far clipping plane.
   // Note I cannot see anything closer than 0.1f units from the screen.
-  m_projectionMatrix = glm::perspective(glm::radians(45.0f),((float)m_screenWidth)/((float)m_screenHeight),0.1f,1024.0f);
+  m_projectionMatrix = glm::perspective(glm::radians(45.0f),((float)m_screenWidth)/((float)m_screenHeight),5.f,1024.0f);
 
   // Perform the update
   if(m_root!=nullptr){

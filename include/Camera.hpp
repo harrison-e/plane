@@ -36,7 +36,11 @@ public:
   // Returns the Camera Z Position where the eye is 
   float GetEyeZPosition();
   // Set the view for the camera
-  void VectorLook(float x, float y, float z);
+  void VectorLook(glm::vec3 newView);
+  // Rotate the camera about its up vector by radians
+  void RotateAboutView(float radians);
+  void RotateAboutRight(float radians);
+  void RotateAboutUp(float radians);
 	// Returns the X 'view' direction
   float GetViewXDirection();
   // Returns the Y 'view' direction

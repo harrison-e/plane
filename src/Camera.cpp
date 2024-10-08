@@ -95,12 +95,24 @@ void Camera::SetCameraEyePosition(float x, float y, float z){
     m_eyePosition.z = z;
 }
 
-void Camera::VectorLook(float x, float y, float z){
-  glm::vec3 newForward = glm::vec3(x,y,z);
-  glm::vec3 newRight = glm::cross(newForward, m_upVector);
+void Camera::VectorLook(glm::vec3 newView){
+  m_viewDirection = newView;
+  m_rightVector = glm::cross(newView, m_upVector);
+}
 
-  m_viewDirection = newForward;
-  m_rightVector = newRight;
+void Camera::RotateAboutView(float radians){
+  m_rightVector = glm::rotate(m_rightVector, radians, m_viewDirection);
+  m_upVector = glm::cross(m_rightVector, m_viewDirection);
+}
+
+void Camera::RotateAboutRight(float radians){
+  m_viewDirection = glm::rotate(m_viewDirection, radians, m_rightVector);
+  m_upVector = glm::cross(m_rightVector, m_viewDirection);
+}
+
+void Camera::RotateAboutUp(float radians){
+  m_viewDirection = glm::rotate(m_viewDirection, radians, m_upVector);
+  m_rightVector = glm::cross(m_viewDirection, m_upVector);
 }
 
 float Camera::GetEyeXPosition(){
@@ -131,10 +143,10 @@ float Camera::GetViewZDirection(){
 Camera::Camera(){
     std::cout << "(Constructor) Created a Camera!\n";
 	// Position us at the origin.
-    m_eyePosition = glm::vec3(0.0f,0.0f, 0.0f);
+    m_eyePosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	// Looking down along the z-axis initially.
 	// Remember, this is negative because we are looking 'into' the scene.
-    m_viewDirection = glm::vec3(0.0f,0.0f, -1.0f);
+    m_viewDirection = glm::vec3(0.0f, 0.0f, -1.0f);
 	// For now--our upVector always points up along the y-axis
     m_upVector = glm::vec3(0.0f, 1.0f, 0.0f);
     m_rightVector = glm::cross(m_viewDirection, m_upVector);

@@ -136,10 +136,9 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
   // Get a pointer to the keyboard state
   const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
 
-  // Update camera to follow airplane 
-  renderer->GetCamera(0)->SetCameraEyePosition(512, 150, 512);
 
-
+  glm::vec3 noseDir = airplane->NoseDirection(); 
+  renderer->GetCamera(0)->VectorLook(noseDir);
 
   // While application is running
   while(!quit){
@@ -156,6 +155,14 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     callback();
 
 
+    // Update camera to follow airplane 
+    glm::mat4 m = ObjectManager::Instance().GetObject(0).GetTransform().GetInternalMatrix();
+
+    glm::vec3 planePos = { m[3][0], m[3][1], m[3][2] };
+    noseDir = airplane->NoseDirection(); 
+    renderer->GetCamera(0)->SetCameraEyePosition(planePos.x, planePos.y, planePos.z);
+    // renderer->GetCamera(0)->VectorLook(noseDir);
+
 
     //Handle events on queue
     while(SDL_PollEvent( &e ) != 0){
@@ -165,38 +172,44 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
         quit = true;
       }
       // Handle keyboard input for the camera class
-      if(e.type == SDL_MOUSEMOTION){
-        // Handle mouse movements
-        mouseX += e.motion.xrel;
-        mouseY += e.motion.yrel;
-        renderer->GetCamera(0)->MouseLook(mouseX, mouseY);
-      }
+      // if(e.type == SDL_MOUSEMOTION){
+      //   // Handle mouse movements
+      //   mouseX += e.motion.xrel;
+      //   mouseY += e.motion.yrel;
+      //   renderer->GetCamera(0)->MouseLook(mouseX, mouseY);
+      // }
     } // End SDL_PollEvent loop.
 
     // Roll 
     if(keyboardState[SDL_SCANCODE_A]){
       airplane->Roll(+0.02f);
+      renderer->GetCamera(0)->RotateAboutView(-0.02f);
       // renderer->GetCamera(0)->MoveLeft(cameraSpeed);
     }else if(keyboardState[SDL_SCANCODE_D]){
       airplane->Roll(-0.02f);
+      renderer->GetCamera(0)->RotateAboutView(+0.02f);
       // renderer->GetCamera(0)->MoveRight(cameraSpeed);
     }
 
     // Pitch 
     else if(keyboardState[SDL_SCANCODE_W]){
       airplane->Pitch(+0.02f);
+      renderer->GetCamera(0)->RotateAboutRight(+0.02f);
       // renderer->GetCamera(0)->MoveForward(cameraSpeed);
     }else if(keyboardState[SDL_SCANCODE_S]){
       airplane->Pitch(-0.02f);
+      renderer->GetCamera(0)->RotateAboutRight(-0.02f);
       // renderer->GetCamera(0)->MoveBackward(cameraSpeed);
     }
 
     // Yaw 
     else if(keyboardState[SDL_SCANCODE_Q]){
-      airplane->Yaw(+0.02f);
+      airplane->Yaw(-0.02f);
+      renderer->GetCamera(0)->RotateAboutUp(+0.02f);
       // renderer->GetCamera(0)->MoveForward(cameraSpeed);
     }else if(keyboardState[SDL_SCANCODE_E]){
-      airplane->Yaw(-0.02f);
+      airplane->Yaw(+0.02f);
+      renderer->GetCamera(0)->RotateAboutUp(-0.02f);
       // renderer->GetCamera(0)->MoveBackward(cameraSpeed);
     }
 
