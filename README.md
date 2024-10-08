@@ -1,6 +1,6 @@
 # Pixelated Plane Simulator
 
-<img src="./media/header.jpg">
+<img src="./media/terrain.png">
 
 ## Controls
 __Basic controls:__
