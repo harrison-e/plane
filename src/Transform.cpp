@@ -7,6 +7,10 @@ Transform::Transform(){
   LoadIdentity();
 }
 
+Transform::Transform(glm::mat3 init){
+  m_modelTransformMatrix = glm::mat4(init);
+}
+
 Transform::~Transform(){
 
 }
@@ -24,19 +28,11 @@ void Transform::Translate(float x, float y, float z){
   // Here we see I have translated the model -1.0f away from its original location.
   // We supply the first argument which is the matrix we want to apply
   // this transformation to (Our previous transformation matrix.
-  m_modelTransformMatrix = glm::translate(m_modelTransformMatrix, glm::vec3(x,y,z));                            
+  m_modelTransformMatrix = glm::translate(m_modelTransformMatrix, glm::vec3(x,y,z));
 }
 
 void Transform::Rotate(float radians, float x, float y, float z){
-  m_modelTransformMatrix = glm::rotate(m_modelTransformMatrix, radians, glm::vec3(x,y,z));        
-  // std::cout << "New model matrix:\n";
-  // for (int i = 0; i < 4; ++i) {
-  //   for (int j = 0; j < 4; ++j) {
-  //     std::cout << m_modelTransformMatrix[i][j] << ' ';
-  //   }
-  //   std::cout << '\n';
-  // }
-  // std::cout << '\n';
+  m_modelTransformMatrix = glm::rotate(m_modelTransformMatrix, radians, glm::vec3(x,y,z));
 }
 
 void Transform::Scale(float x, float y, float z){

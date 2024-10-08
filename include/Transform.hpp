@@ -22,13 +22,15 @@ class Transform{
 public:
   // Constructor for a new transform
   Transform();
+  // Constructor for custom transform 
+  Transform(glm::mat3 init);
   // Destructor for the transform
   ~Transform();
   // Resets matrix transformations to the identity matrix
   void LoadIdentity();
   // Perform a translation of an object
   void Translate(float x, float y, float z);
-  // Perform rotation about an axis
+  // Perform rotation about an axisReturns the upper 3x3 matrix from the 4x4 matrix and multiplies the normal by that. This matrix is called the 'normal matrix'. You use this to bring your normals from world space to eye space. The upper 3x3 portion of the matrix is important for scale and rotation, while the rest is only for translation (and normals are never translated)
   void Rotate(float radians, float x, float y, float z);
   // Perform rotation about an axis
   void Scale(float x, float y, float z);

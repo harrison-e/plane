@@ -36,7 +36,7 @@ SDLGraphicsProgram::SDLGraphicsProgram(int w, int h){
   SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 
   //Create window
-  m_window = SDL_CreateWindow( "Lab",
+  m_window = SDL_CreateWindow( "Plane",
                           SDL_WINDOWPOS_UNDEFINED,
                           SDL_WINDOWPOS_UNDEFINED,
                           m_width,
@@ -87,8 +87,8 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
   // Create a renderer
   std::shared_ptr<Renderer> renderer = std::make_shared<Renderer>(m_width,m_height);    
 
-  // Create an airplane (windmill) 
-  float scale = 10.f;
+  // Create an airplane 
+  float scale = 5.f;
   Airplane* airplane = new Airplane();
   Object* airplaneReference = airplane;
   ObjectManager::Instance().AddObject(airplaneReference);
@@ -136,6 +136,9 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
   // Get a pointer to the keyboard state
   const Uint8* keyboardState = SDL_GetKeyboardState(NULL);
 
+  // Update camera to follow airplane 
+  renderer->GetCamera(0)->SetCameraEyePosition(512, 150, 512);
+
 
 
   // While application is running
@@ -153,22 +156,6 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     callback();
 
 
-    // Update camera to follow airplane 
-    glm::mat4 m = ObjectManager::Instance().GetObject(0).GetTransform().GetInternalMatrix();
-    // for (int i = 0; i < 4; ++i) {
-    //   for (int j = 0; j < 4; ++j) {
-    //     std::cout << m[j][i] << ' ';
-    //   }
-    //   std::cout << '\n';
-    // }
-    // std::cout << '\n';
-
-    glm::vec3 planePos = glm::vec3(m[3][0], m[3][1], m[3][2]);
-    glm::vec3 noseDir = airplane->NoseDirection(); 
-    planePos -= noseDir * scale * 4.f;
-    renderer->GetCamera(0)->SetCameraEyePosition(planePos.x, planePos.y + scale, planePos.z);
-    renderer->GetCamera(0)->VectorLook(noseDir.x, noseDir.y, noseDir.z);
-
 
     //Handle events on queue
     while(SDL_PollEvent( &e ) != 0){
@@ -178,43 +165,50 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
         quit = true;
       }
       // Handle keyboard input for the camera class
-      // if(e.type == SDL_MOUSEMOTION){
-      //   // Handle mouse movements
-      //   mouseX += e.motion.xrel;
-      //   mouseY += e.motion.yrel;
-      //   renderer->GetCamera(0)->MouseLook(mouseX, mouseY);
-      // }
+      if(e.type == SDL_MOUSEMOTION){
+        // Handle mouse movements
+        mouseX += e.motion.xrel;
+        mouseY += e.motion.yrel;
+        renderer->GetCamera(0)->MouseLook(mouseX, mouseY);
+      }
     } // End SDL_PollEvent loop.
 
-    // Move camera left or right
+    // Roll 
     if(keyboardState[SDL_SCANCODE_A]){
-      airplane->Roll(-0.02f);
+      airplane->Roll(+0.02f);
       // renderer->GetCamera(0)->MoveLeft(cameraSpeed);
     }else if(keyboardState[SDL_SCANCODE_D]){
-      airplane->Roll(+0.02f);
+      airplane->Roll(-0.02f);
       // renderer->GetCamera(0)->MoveRight(cameraSpeed);
     }
 
-    // Move camera forward or back
+    // Pitch 
     else if(keyboardState[SDL_SCANCODE_W]){
-      airplane->Pitch(-0.02f);
+      airplane->Pitch(+0.02f);
       // renderer->GetCamera(0)->MoveForward(cameraSpeed);
     }else if(keyboardState[SDL_SCANCODE_S]){
-      airplane->Pitch(+0.02f);
+      airplane->Pitch(-0.02f);
       // renderer->GetCamera(0)->MoveBackward(cameraSpeed);
-    }else{
-      airplane->Stabilize(0.02f);
+    }
+
+    // Yaw 
+    else if(keyboardState[SDL_SCANCODE_Q]){
+      airplane->Yaw(+0.02f);
+      // renderer->GetCamera(0)->MoveForward(cameraSpeed);
+    }else if(keyboardState[SDL_SCANCODE_E]){
+      airplane->Yaw(-0.02f);
+      // renderer->GetCamera(0)->MoveBackward(cameraSpeed);
     }
 
     // Move camera up or down
-    if(keyboardState[SDL_SCANCODE_SPACE])   {
-      // renderer->GetCamera(0)->MoveUp(cameraSpeed);
-    }else if(keyboardState[SDL_SCANCODE_LSHIFT]){
-      // renderer->GetCamera(0)->MoveDown(cameraSpeed);
-    }
+    // if(keyboardState[SDL_SCANCODE_SPACE])   {
+    //   renderer->GetCamera(0)->MoveUp(cameraSpeed);
+    // }else if(keyboardState[SDL_SCANCODE_LSHIFT]){
+    //   renderer->GetCamera(0)->MoveDown(cameraSpeed);
+    // }
 
 
-    // To regenerate Perlin terrain (or do nothing for other terrain)
+    // Regenerate Perlin terrain 
     if(keyboardState[SDL_SCANCODE_R] && myTerrain->IsPerlin()) {
       resetTerrain = true;
     }
@@ -229,7 +223,7 @@ void SDLGraphicsProgram::SetLoopCallback(std::function<void(void)> callback){
     // Render our scene using our selected renderer
     renderer->Render();
     // Delay to slow things down just a bit!
-    SDL_Delay(25);  // TODO: You can change this or implement a frame
+    SDL_Delay(10);  // TODO: You can change this or implement a frame
                     // independent movement method if you like.
     //Update screen of our specified window
     SDL_GL_SwapWindow(GetSDLWindow());
